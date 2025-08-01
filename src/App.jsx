@@ -1,22 +1,44 @@
 
 import "./App.css";
-import DoctorsCard from "./Components/DoctorsCard";
+import React, { useState } from "react";
+import NavBar from "./Components/NavBar";
+import DoctorsHomepage from "./Components/DoctorsHomepage";
+import DoctorsProfiles from "./Components/DoctorsProfiles";
+import BookAppointment from "./Components/BookAppointment";
+
+
 
 
 function App() {
-  // Example doctor object for demonstration
-  const doctor = {
-    id: 1,
-    name: 'Dr. Jane Doe',
-    specialization: 'Cardiologist',
-    image: 'https://randomuser.me/api/portraits/women/44.jpg',
-    available: true,
+  const [page, setPage] = useState("home");
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+
+  // Handler to start booking for a doctor
+  const handleBookDoctor = (doctor) => {
+    setSelectedDoctor(doctor);
+    setPage("book");
+  };
+
+  // Handler after booking confirmation
+  const handleBookingConfirmed = () => {
+    setSelectedDoctor(null);
+    setPage("mybookings");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <DoctorsCard doctor={doctor} />
-    </div>
+    <>
+      <NavBar />
+      {page === "home" && (
+        <DoctorsHomepage onFindDoctor={() => setPage("profiles")} />
+      )}
+      {page === "profiles" && (
+        <DoctorsProfiles onBack={() => setPage("home")} onBook={handleBookDoctor} />
+      )}
+      {page === "book" && (
+        <BookAppointment doctor={selectedDoctor} onConfirm={handleBookingConfirmed} />
+      )}
+      {/* MyBookings page rendering will be added here later */}
+    </>
   );
 }
 
