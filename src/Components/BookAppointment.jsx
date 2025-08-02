@@ -1,65 +1,78 @@
 import React, { useState } from "react";
 
-const BookAppointment = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [confirmed, setConfirmed] = useState(false);
+const BookAppointment = ({ doctor, onBack, onConfirm }) => {
+  const [form, setForm] = useState({ name: "", email: "", datetime: "" });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !email || !date || !time) return;
-    setConfirmed(true);
+    setSubmitted(true);
+    if (typeof onConfirm === 'function') {
+      onConfirm(form);
+    }
   };
 
-  if (confirmed) {
+  if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col items-center">
-          <h3 className="text-xl font-bold text-green-700 mb-2">Appointment Confirmed!</h3>
-          <div className="text-gray-700 text-center mb-2">Thank you, {name}! Your appointment is booked for {date} at {time}.</div>
+      <div className="max-w-md mx-auto py-10 px-4 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-green-600">Appointment Confirmed!</h2>
+        <div className="mb-2">
+          <div className="text-lg font-semibold text-blue-700">{doctor?.name}</div>
+          <div className="text-sm text-gray-700 mb-2">{doctor?.specialization}</div>
         </div>
+        <div className="mb-2">
+          <span className="font-semibold">Patient:</span> {form.name}
+        </div>
+        <div className="mb-4">
+          <span className="font-semibold">Date & Time:</span> {form.datetime}
+        </div>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={onBack}>Back</button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col items-center">
-        <h3 className="text-xl font-bold text-blue-700 mb-4">Book Appointment</h3>
-        <form className="w-full flex flex-col gap-3" onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto py-10 px-4">
+      <button className="mb-6 text-blue-600 hover:underline" onClick={onBack}>&larr; Back</button>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold mb-4">Book Appointment{doctor?.name ? ` with ${doctor.name}` : ""}</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
-            required
+            name="name"
             placeholder="Patient Name"
+            value={form.name}
+            onChange={handleChange}
+            required
             className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={name}
-            onChange={e => setName(e.target.value)}
           />
           <input
             type="email"
-            required
+            name="email"
             placeholder="Email"
-            className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          <input
-            type="date"
+            value={form.email}
+            onChange={handleChange}
             required
             className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={date}
-            onChange={e => setDate(e.target.value)}
           />
           <input
-            type="time"
+            type="datetime-local"
+            name="datetime"
+            value={form.datetime}
+            onChange={handleChange}
             required
             className="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={time}
-            onChange={e => setTime(e.target.value)}
           />
-          <button type="submit" className="bg-blue-600 text-white rounded-full py-2 font-semibold hover:bg-blue-700 transition">Confirm Booking</button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Confirm Appointment
+          </button>
         </form>
       </div>
     </div>
